@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Desafio Contábil Flor de Baunilha</title>
+<style>
+:root{
+  --cream: #FBF1E6;
+  --cream-soft: #FCF6EE;
+  --rose-dark: #8E2E52;     /* título / vinho escuro */
+  --rose-mid: #B05C7E;      /* roxo/rosa médio */
+  --rose: #C98AA4;          /* rosa principal */
+  --rose-light: #E7B9C9;    /* rosa claro */
+  --pink-blob: #B9657E;
+  --gold: #C9A36A;          /* dourado baunilha */
+  --white: #FFFFFF;
+  --text-dark: #4A2536;
+  --green-ok: #5FA876;
+  --red-no: #C45B5B;
+  --shadow: 0 10px 30px rgba(142,46,82,0.15);
+  --radius: 22px;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  font-family: 'Segoe UI', 'Poppins', Arial, sans-serif;
+  background: var(--cream);
+  color: var(--text-dark);
+  min-height:100vh;
+  overflow-x:hidden;
+  position:relative;
+}
+
+.bg-blob{
+  position:fixed;
+  border-radius:50%;
+  filter:blur(0px);
+  z-index:0;
+  opacity:0.9;
+}
+.blob1{
+  width:480px;height:480px;
+  background:var(--rose-light);
+  top:-180px; left:-180px;
+}
+.blob2{
+  width:560px;height:560px;
+  background:var(--pink-blob);
+  bottom:-220px; right:-220px;
+  opacity:0.85;
+}
+
+.container{
+  position:relative;
+  z-index:1;
+  max-width:760px;
+  margin:0 auto;
+  padding:32px 18px 60px;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.screen{display:none; width:100%;}
+.screen.active{display:block; animation: fadeIn .35s ease;}
+
+@keyframes fadeIn{
+  from{opacity:0; transform:translateY(10px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+.card{
+  background:var(--white);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:36px 30px;
+  position:relative;
+}
+
+.intro-card{text-align:center;}
+.logo-badge{
+  display:inline-block;
+  border:2px solid var(--rose-dark);
+  color:var(--rose-dark);
+  font-weight:700;
+  font-size:12px;
+  letter-spacing:1px;
+  padding:4px 10px;
+  border-radius:8px;
+  margin-bottom:18px;
+}
+.hidden{display:none !important;}
+
+.brand-title{
+  font-family: 'Georgia', serif;
+  color:var(--text-dark);
+  font-size:2rem;
+  margin:0 0 4px;
+}
+.brand-title span{
+  font-style:italic;
+  font-weight:400;
+  font-size:1.2rem;
+  color:var(--rose-mid);
+}
+.brand-sub{
+  color:var(--rose-mid);
+  font-size:.85rem;
+  text-transform:uppercase;
+  letter-spacing:2px;
+  margin-bottom:22px;
+}
+.game-title{
+  color:var(--rose-dark);
+  font-size:1.7rem;
+  margin:10px 0 12px;
+}
+.game-desc{
+  color:#7a5066;
+  line-height:1.5;
+  margin-bottom:28px;
+}
+
+.btn{
+  font-family:inherit;
+  font-weight:700;
+  font-size:1rem;
+  border:none;
+  border-radius:50px;
+  padding:14px 28px;
+  cursor:pointer;
+  transition:transform .15s ease, box-shadow .15s ease, opacity .15s;
+  margin:6px;
+}
+.btn:active{transform:scale(0.96);}
+.btn-primary{
+  background:linear-gradient(135deg, var(--rose-dark), var(--rose-mid));
+  color:#fff;
+  box-shadow:0 8px 18px rgba(142,46,82,0.35);
+}
+.btn-primary:hover{box-shadow:0 10px 22px rgba(142,46,82,0.45);}
+.btn-secondary{
+  background:var(--gold);
+  color:#fff;
+  box-shadow:0 8px 18px rgba(201,163,106,0.35);
+}
+.btn-ghost{
+  background:transparent;
+  color:var(--rose-dark);
+  border:2px solid var(--rose-light);
+}
+.btn-ghost:hover{background:var(--cream-soft);}
+.btn-row{display:flex; flex-wrap:wrap; justify-content:center; margin-top:10px;}
+.btn:disabled{opacity:.5; cursor:not-allowed; transform:none;}
+
+.section-title{
+  color:var(--rose-dark);
+  text-align:center;
+  margin-top:0;
+}
+.muted{color:#9a6b81; text-align:center; font-size:.92rem;}
+
+/* SETUP */
+.players-setup{
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+  flex-wrap:wrap;
+  justify-content:center;
+  margin-top:18px;
+}
+.player-setup{
+  flex:1 1 220px;
+  background:var(--cream-soft);
+  border-radius:18px;
+  padding:18px;
+  text-align:center;
+}
+.player-setup h3{color:var(--rose-dark); margin-top:0;}
+.vs-divider{
+  align-self:center;
+  font-weight:800;
+  color:var(--gold);
+  font-size:1.3rem;
+}
+.avatar-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-bottom:14px;
+}
+.avatar-option{
+  font-size:1.8rem;
+  background:#fff;
+  border:3px solid transparent;
+  border-radius:14px;
+  padding:8px 0;
+  cursor:pointer;
+  transition:.15s;
+}
+.avatar-option:hover{background:var(--rose-light);}
+.avatar-option.selected{
+  border-color:var(--rose-dark);
+  background:var(--rose-light);
+}
+.avatar-option.taken{
+  opacity:.25;
+  cursor:not-allowed;
+}
+.name-input{
+  width:100%;
+  padding:10px 14px;
+  border-radius:50px;
+  border:2px solid var(--rose-light);
+  font-size:1rem;
+  text-align:center;
+  outline:none;
+}
+.name-input:focus{border-color:var(--rose-mid);}
+.error-msg{color:var(--red-no); text-align:center; font-weight:600; min-height:20px;}
+
+/* GAME */
+.game-card{padding:26px 22px;}
+.game-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.score-pill{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  background:var(--cream-soft);
+  border-radius:50px;
+  padding:8px 14px;
+  font-weight:700;
+  transition:.2s;
+}
+.score-pill.active-turn{
+  background:var(--rose-light);
+  box-shadow:0 0 0 3px var(--rose-mid) inset;
+}
+.score-pill-right{flex-direction:row-reverse;}
+.score-avatar{font-size:1.4rem;}
+.score-name{color:var(--text-dark); font-size:.85rem;}
+.score-points{
+  background:var(--rose-dark);
+  color:#fff;
+  border-radius:50px;
+  padding:2px 10px;
+  font-size:.85rem;
+}
+.round-info{text-align:center;}
+.round-label{color:var(--rose-mid); font-size:.8rem; font-weight:700;}
+.turn-indicator{color:var(--rose-dark); font-weight:800; font-size:1rem;}
+
+.progress-track{
+  height:8px;
+  background:var(--cream-soft);
+  border-radius:50px;
+  margin:18px 0 22px;
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg, var(--gold), var(--rose-mid));
+  transition:width .4s ease;
+}
+
+.topic-tag{
+  display:inline-block;
+  background:var(--gold);
+  color:#fff;
+  font-size:.72rem;
+  font-weight:700;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  padding:5px 12px;
+  border-radius:50px;
+  margin-bottom:12px;
+}
+.question-text{
+  color:var(--text-dark);
+  font-size:1.15rem;
+  line-height:1.5;
+  margin:0;
+}
+
+.options-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+  margin:20px 0 10px;
+}
+@media(min-width:560px){
+  .options-grid{grid-template-columns:1fr 1fr;}
+}
+.option-btn{
+  text-align:left;
+  background:var(--cream-soft);
+  border:2px solid transparent;
+  border-radius:16px;
+  padding:14px 16px;
+  font-size:.95rem;
+  color:var(--text-dark);
+  cursor:pointer;
+  transition:.15s;
+  font-family:inherit;
+}
+.option-btn:hover:not(:disabled){
+  border-color:var(--rose-mid);
+  background:#fff;
+}
+.option-btn:disabled{cursor:not-allowed;}
+.option-btn.correct{
+  background:#e3f3e8;
+  border-color:var(--green-ok);
+  color:#2c6b40;
+  font-weight:700;
+}
+.option-btn.wrong{
+  background:#fbe7e7;
+  border-color:var(--red-no);
+  color:#8c2f2f;
+  font-weight:700;
+}
+
+.feedback-box{
+  min-height:30px;
+  text-align:center;
+  font-weight:700;
+  margin-top:10px;
+}
+.feedback-box.ok{color:var(--green-ok);}
+.feedback-box.no{color:var(--red-no);}
+
+.btn-next{display:block; margin:18px auto 0;}
+
+/* RESULT */
+.result-card{text-align:center;}
+.winner-banner{
+  font-size:1.4rem;
+  font-weight:800;
+  color:var(--rose-dark);
+  background:var(--rose-light);
+  border-radius:18px;
+  padding:16px;
+  margin:16px 0 22px;
+}
+.final-scores{
+  display:flex;
+  gap:14px;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+.final-score-card{
+  background:var(--cream-soft);
+  border-radius:18px;
+  padding:18px 22px;
+  min-width:140px;
+}
+.final-score-card.winner{
+  background:linear-gradient(135deg, var(--gold), var(--rose-mid));
+  color:#fff;
+}
+.final-score-card .fav{font-size:2.2rem;}
+.final-score-card .fname{font-weight:700; margin:6px 0 2px;}
+.final-score-card .fpts{font-size:1.5rem; font-weight:800;}
+
+/* RANKING */
+.ranking-list{display:flex; flex-direction:column; gap:10px; margin:18px 0;}
+.ranking-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:var(--cream-soft);
+  border-radius:14px;
+  padding:10px 16px;
+}
+.ranking-pos{
+  font-weight:800;
+  color:var(--rose-dark);
+  width:28px;
+  text-align:center;
+}
+.ranking-item:nth-child(1) .ranking-pos{color:#C9A36A; font-size:1.3rem;}
+.ranking-avatar{font-size:1.4rem;}
+.ranking-name{flex:1; font-weight:700; color:var(--text-dark);}
+.ranking-pts{
+  background:var(--rose-dark);
+  color:#fff;
+  border-radius:50px;
+  padding:3px 12px;
+  font-weight:700;
+  font-size:.85rem;
+}
+.ranking-date{font-size:.7rem; color:#a886a0;}
+
+.footer-note{
+  position:relative;
+  z-index:1;
+  text-align:center;
+  color:var(--rose-mid);
+  font-size:.75rem;
+  padding:18px;
+  opacity:.8;
+}
+
+@media(max-width:480px){
+  .card{padding:24px 16px;}
+  .game-header{justify-content:center;}
+  .score-pill-right{flex-direction:row;}
+}
+
+</style>
+</head>
+<body>
+
+<div class="bg-blob blob1"></div>
+<div class="bg-blob blob2"></div>
+
+<div id="app" class="container">
+
+  <!-- TELA 0: ABERTURA -->
+  <section id="screen-intro" class="screen active">
+    <div class="card intro-card">
+      <div class="logo-badge">E-BOOK</div>
+      <h1 class="brand-title">Flor <span>de</span> Baunilha</h1>
+      <p class="brand-sub">Sabor que encanta, qualidade que fica.</p>
+      <h2 class="game-title">🍦 Desafio Contábil 🍦</h2>
+      <p class="game-desc">Aprenda jogando em dupla! Teste seus conhecimentos de Plano de Contas, Débito e Crédito, Lançamentos, Razonetes e Demonstrações Contábeis.</p>
+      <button id="btn-start" class="btn btn-primary">Começar Desafio</button>
+      <button id="btn-ranking-open" class="btn btn-ghost">🏆 Ver Ranking da Turma</button>
+    </div>
+  </section>
+
+  <!-- TELA 1: CADASTRO DE JOGADORES -->
+  <section id="screen-setup" class="screen">
+    <div class="card">
+      <h2 class="section-title">Forme sua dupla</h2>
+      <p class="muted">Cada jogador escolhe um personagem e registra seu nome.</p>
+
+      <div class="players-setup">
+        <div class="player-setup" data-player="1">
+          <h3>Jogador 1</h3>
+          <div class="avatar-grid" data-player="1"></div>
+          <input type="text" class="name-input" id="name-1" placeholder="Nome do Jogador 1" maxlength="18">
+        </div>
+        <div class="vs-divider">VS</div>
+        <div class="player-setup" data-player="2">
+          <h3>Jogador 2</h3>
+          <div class="avatar-grid" data-player="2"></div>
+          <input type="text" class="name-input" id="name-2" placeholder="Nome do Jogador 2" maxlength="18">
+        </div>
+      </div>
+
+      <p id="setup-error" class="error-msg"></p>
+      <div class="btn-row">
+        <button id="btn-back-intro" class="btn btn-ghost">Voltar</button>
+        <button id="btn-setup-confirm" class="btn btn-primary">Iniciar Partida</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- TELA 2: JOGO -->
+  <section id="screen-game" class="screen">
+    <div class="card game-card">
+
+      <div class="game-header">
+        <div class="score-pill" id="score-pill-1">
+          <span class="score-avatar" id="score-avatar-1"></span>
+          <span class="score-name" id="score-name-1"></span>
+          <span class="score-points" id="score-points-1">0</span>
+        </div>
+
+        <div class="round-info">
+          <div class="round-label">Pergunta <span id="q-current">1</span>/<span id="q-total">6</span></div>
+          <div class="turn-indicator" id="turn-indicator">Vez de: —</div>
+        </div>
+
+        <div class="score-pill score-pill-right" id="score-pill-2">
+          <span class="score-points" id="score-points-2">0</span>
+          <span class="score-name" id="score-name-2"></span>
+          <span class="score-avatar" id="score-avatar-2"></span>
+        </div>
+      </div>
+
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+
+      <div class="question-box">
+        <div class="topic-tag" id="topic-tag">Plano de Contas</div>
+        <h3 id="question-text" class="question-text">Carregando pergunta...</h3>
+      </div>
+
+      <div class="options-grid" id="options-grid"></div>
+
+      <div class="feedback-box" id="feedback-box"></div>
+
+      <button id="btn-next" class="btn btn-primary btn-next hidden">Próxima Pergunta →</button>
+    </div>
+  </section>
+
+  <!-- TELA 3: RESULTADO FINAL -->
+  <section id="screen-result" class="screen">
+    <div class="card result-card">
+      <h2 class="section-title">🏁 Fim de Partida!</h2>
+      <div id="winner-banner" class="winner-banner"></div>
+
+      <div class="final-scores" id="final-scores"></div>
+
+      <div class="btn-row">
+        <button id="btn-save-ranking" class="btn btn-primary">💾 Salvar no Ranking da Turma</button>
+      </div>
+      <div class="btn-row">
+        <button id="btn-play-again" class="btn btn-secondary">🔁 Jogar Novamente</button>
+        <button id="btn-go-ranking" class="btn btn-ghost">🏆 Ver Ranking</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- TELA 4: RANKING -->
+  <section id="screen-ranking" class="screen">
+    <div class="card">
+      <h2 class="section-title">🏆 Ranking da Turma</h2>
+      <p class="muted">Comparação saudável de resultados — Flor de Baunilha</p>
+      <div id="ranking-list" class="ranking-list"></div>
+      <p id="ranking-empty" class="muted hidden">Nenhum resultado registrado ainda. Jogue uma partida!</p>
+      <div class="btn-row">
+        <button id="btn-clear-ranking" class="btn btn-ghost">Limpar Ranking</button>
+        <button id="btn-ranking-back" class="btn btn-primary">Voltar ao Início</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer class="footer-note">Desafio Contábil Flor de Baunilha · Sistematização de Informações Contábeis · PUCPR</footer>
+
+<script>
+// Banco de perguntas - Desafio Contábil Flor de Baunilha
+// Cada pergunta tem: topic, question, options[], correctIndex
+// O jogo embaralha as opções a cada exibição (posição da resposta certa varia)
+// e seleciona 6 perguntas por rodada, evitando repetir as últimas usadas.
+
+const QUESTION_BANK = [
+
+  // ===== PLANO DE CONTAS =====
+  {
+    topic: "Plano de Contas",
+    question: "O que é o Plano de Contas?",
+    options: [
+      "Uma estrutura que organiza e classifica todas as contas contábeis da empresa",
+      "Um relatório de vendas mensais",
+      "Um documento exclusivo para abertura de empresas",
+      "A lista de funcionários da empresa"
+    ],
+    correctIndex: 0
+  },
+  {
+    topic: "Plano de Contas",
+    question: "No Ativo, as contas do Plano de Contas são organizadas por:",
+    options: [
+      "Ordem alfabética",
+      "Grau de liquidez (mais fácil para mais difícil de virar dinheiro)",
+      "Data de aquisição",
+      "Valor de compra, do maior para o menor"
+    ],
+    correctIndex: 1
+  },
+  {
+    topic: "Plano de Contas",
+    question: "No Passivo, as contas são organizadas pelo:",
+    options: [
+      "Grau de liquidez",
+      "Grau de exigibilidade (o que precisa ser pago primeiro)",
+      "Ordem de criação da conta",
+      "Tipo de fornecedor"
+    ],
+    correctIndex: 1
+  },
+  {
+    topic: "Plano de Contas",
+    question: "Cada conta do Plano de Contas possui, no mínimo:",
+    options: [
+      "Nome, código e classificação",
+      "Apenas um valor numérico",
+      "Somente o nome do responsável",
+      "Apenas a data do lançamento"
+    ],
+    correctIndex: 0
+  },
+  {
+    topic: "Plano de Contas",
+    question: "A conta “Caixa” da Flor de Baunilha está classificada em qual grupo?",
+    options: [
+      "Ativo Não Circulante",
+      "Ativo Circulante",
+      "Passivo Circulante",
+      "Patrimônio Líquido"
+    ],
+    correctIndex: 1
+  },
+  {
+    topic: "Plano de Contas",
+    question: "“Salários a Pagar” pertence a qual grupo do Plano de Contas?",
+    options: [
+      "Ativo Circulante",
+      "Passivo Circulante",
+      "Receitas",
+      "Ativo Não Circulante"
+    ],
+    correctIndex: 1
+  },
+  {
+    topic: "Plano de Contas",
+    question: "Por que o Plano de Contas é importante para a empresa?",
+    options: [
+      "Porque é obrigatório apenas em empresas grandes",
+      "Porque facilita os registros e a elaboração das demonstrações financeiras",
+      "Porque substitui o Livro Diário",
+      "Porque serve apenas para fins de marketing"
+    ],
+    correctIndex: 1
+  },
+
+  // ===== DÉBITO E CRÉDITO =====
+  {
+    topic: "Débito e Crédito",
+    question: "No razonete (Conta T), o lado esquerdo representa:",
+    options: ["Crédito", "Débito", "Patrimônio Líquido", "Receita"],
+    correctIndex: 1
+  },
+  {
+    topic: "Débito e Crédito",
+    question: "Em uma conta de Ativo, um aumento é registrado como:",
+    options: ["Débito", "Crédito", "Não se registra", "Depende do mês"],
+    correctIndex: 0
+  },
+  {
+    topic: "Débito e Crédito",
+    question: "Em uma conta de Passivo, um aumento é registrado como:",
+    options: ["Débito", "Crédito", "Saldo zero", "Apuração do resultado"],
+    correctIndex: 1
+  },
+  {
+    topic: "Débito e Crédito",
+    question: "Segundo o e-book, qual afirmação está correta sobre débito e crédito?",
+    options: [
+      "Débito sempre significa dívida e crédito sempre significa dinheiro entrando",
+      "Débito nem sempre significa dívida; tudo depende da conta analisada",
+      "Crédito é usado apenas para contas de receita",
+      "Débito é usado apenas para o Caixa"
+    ],
+    correctIndex: 1
+  },
+  {
+    topic: "Débito e Crédito",
+    question: "A compra de uma máquina à vista gera, na conta Caixa, um lançamento a:",
+    options: ["Débito", "Crédito", "Não gera lançamento", "Apuração do resultado"],
+    correctIndex: 1
+  },
+  {
+    topic: "Débito e Crédito",
+    question: "A compra de uma máquina à vista gera, na conta Máquinas, um lançamento a:",
+    options: ["Crédito", "Débito", "Patrimônio Líquido", "Nenhum dos dois"],
+    correctIndex: 1
+  },
+
+  // ===== LANÇAMENTOS CONTÁBEIS / PARTIDAS DOBRADAS =====
+  {
+    topic: "Lançamentos Contábeis",
+    question: "Quem é considerado o “Pai da Contabilidade” por divulgar o método das partidas dobradas?",
+    options: ["Adam Smith", "Luca Pacioli", "Isaac Newton", "Karl Marx"],
+    correctIndex: 1
+  },
+  {
+    topic: "Lançamentos Contábeis",
+    question: "Em que ano Luca Pacioli divulgou o método das partidas dobradas?",
+    options: ["1394", "1494", "1604", "1804"],
+    correctIndex: 1
+  },
+  {
+    topic: "Lançamentos Contábeis",
+    question: "O método das partidas dobradas estabelece que:",
+    options: [
+      "Toda movimentação afeta apenas uma conta contábil",
+      "Para todo débito existe um crédito de mesmo valor",
+      "Débitos e créditos podem ter valores diferentes",
+      "Apenas o Livro Diário usa esse método"
+    ],
+    correctIndex: 1
+  },
+  {
+    topic: "Lançamentos Contábeis",
+    question: "O que é o Livro Diário?",
+    options: [
+      "Um relatório anual de lucros",
+      "O registro de todas as movimentações financeiras em ordem cronológica",
+      "Um resumo apenas das vendas",
+      "Um documento opcional para qualquer empresa"
+    ],
+    correctIndex: 1
+  },
+  {
+    topic: "Lançamentos Contábeis",
+    question: "O Livro Diário é obrigatório e organiza os fatos contábeis em:",
+    options: ["Ordem alfabética", "Ordem cronológica", "Ordem de valor", "Ordem de departamento"],
+    correctIndex: 1
+  },
+  {
+    topic: "Lançamentos Contábeis",
+    question: "A Flor de Baunilha comprou equipamentos pagos à vista no valor de R$ 20.000,00. Esse lançamento afeta:",
+    options: [
+      "Apenas a conta Equipamentos",
+      "As contas Equipamentos (débito) e Caixa (crédito)",
+      "Apenas a conta Caixa",
+      "A conta de Receita"
+    ],
+    correctIndex: 1
+  },
+  {
+    topic: "Lançamentos Contábeis",
+    question: "Os sócios integralizaram capital de R$ 500.000,00 para abrir a Flor de Baunilha. Esse fato é registrado como:",
+    options: [
+      "Despesa Operacional",
+      "Aumento de Caixa/Banco e aumento do Capital Social",
+      "Redução do Patrimônio Líquido",
+      "Custo de Produção"
+    ],
+    correctIndex: 1
+  },
+
+  // ===== RAZONETES =====
+  {
+    topic: "Razonetes",
+    question: "O Razonete também é conhecido popularmente como:",
+    options: ["Balancete", "Conta T", "Livro Caixa", "DRE Simplificada"],
+    correctIndex: 1
+  },
+  {
+    topic: "Razonetes",
+    question: "Com o razonete é possível visualizar:",
+    options: [
+      "Apenas o saldo final da conta",
+      "O que entrou, o que saiu e o saldo da conta",
+      "Somente o nome da conta",
+      "Apenas os créditos"
+    ],
+    correctIndex: 1
+  },
+  {
+    topic: "Razonetes",
+    question: "O que significa a sigla ARE?",
+    options: [
+      "Análise de Receitas e Estoques",
+      "Apuração do Resultado do Exercício",
+      "Ativo e Receita Empresarial",
+      "Apuração de Recursos Externos"
+    ],
+    correctIndex: 1
+  },
+  {
+    topic: "Razonetes",
+    question: "Sobre a conta ARE, é correto afirmar que:",
+    options: [
+      "Ela aparece permanentemente no Balanço Patrimonial",
+      "Ela é zerada ao final do processo e serve apenas para apurar o resultado do período",
+      "Ela substitui o Livro Diário",
+      "Ela é usada apenas para registrar despesas administrativas"
+    ],
+    correctIndex: 1
+  },
+  {
+    topic: "Razonetes",
+    question: "Se na ARE as receitas forem maiores que as despesas, o resultado é:",
+    options: ["Prejuízo", "Lucro", "Saldo zero", "Patrimônio negativo"],
+    correctIndex: 1
+  },
+  {
+    topic: "Razonetes",
+    question: "O saldo final apurado na ARE é transferido para:",
+    options: [
+      "Caixa",
+      "Lucros/Prejuízos Acumulados no Patrimônio Líquido",
+      "Fornecedores",
+      "Receita Bruta"
+    ],
+    correctIndex: 1
+  },
+
+  // ===== DEMONSTRAÇÕES CONTÁBEIS (BP e DR) =====
+  {
+    topic: "Demonstrações Contábeis",
+    question: "O Balanço Patrimonial mostra:",
+    options: [
+      "Apenas os lucros do mês",
+      "Tudo o que a empresa possui, o que deve e o valor pertencente aos sócios",
+      "Somente as vendas realizadas",
+      "Apenas as despesas administrativas"
+    ],
+    correctIndex: 1
+  },
+  {
+    topic: "Demonstrações Contábeis",
+    question: "A equação fundamental do Balanço Patrimonial é:",
+    options: [
+      "Ativo = Passivo + Patrimônio Líquido",
+      "Ativo = Receita - Despesa",
+      "Passivo = Ativo - Lucro",
+      "Patrimônio Líquido = Receita Bruta"
+    ],
+    correctIndex: 0
+  },
+  {
+    topic: "Demonstrações Contábeis",
+    question: "Máquinas, freezers e veículos da Flor de Baunilha são classificados como:",
+    options: ["Ativo Circulante", "Ativo Não Circulante (Imobilizado)", "Passivo Circulante", "Despesas"],
+    correctIndex: 1
+  },
+  {
+    topic: "Demonstrações Contábeis",
+    question: "A marca “Flor de Baunilha” é um exemplo de:",
+    options: ["Ativo Circulante", "Passivo Não Circulante", "Ativo Intangível", "Capital Social"],
+    correctIndex: 2
+  },
+  {
+    topic: "Demonstrações Contábeis",
+    question: "O que a DR (Demonstração do Resultado) mostra?",
+    options: [
+      "Apenas o valor do capital social",
+      "Se a empresa teve lucro ou prejuízo em determinado período",
+      "Somente os bens da empresa",
+      "Apenas as dívidas de longo prazo"
+    ],
+    correctIndex: 1
+  },
+  {
+    topic: "Demonstrações Contábeis",
+    question: "Na DR, o Custo é definido como:",
+    options: [
+      "Gasto necessário para manter a empresa funcionando, sem ligação direta com a produção",
+      "Gasto diretamente ligado à produção ou compra do produto vendido",
+      "Valor recebido na venda de produtos",
+      "Valor investido pelos sócios"
+    ],
+    correctIndex: 1
+  },
+  {
+    topic: "Demonstrações Contábeis",
+    question: "Na DR, a Despesa é definida como:",
+    options: [
+      "Gasto ligado diretamente à produção",
+      "Gasto necessário para manter a empresa funcionando, sem estar ligado diretamente à produção",
+      "O mesmo que receita líquida",
+      "O valor do Patrimônio Líquido"
+    ],
+    correctIndex: 1
+  },
+  {
+    topic: "Demonstrações Contábeis",
+    question: "Na DR da Flor de Baunilha, a Receita Líquida foi de R$ 50.500,00. Como ela é calculada?",
+    options: [
+      "Receita Bruta menos ICMS",
+      "Receita Bruta mais Despesas",
+      "Lucro Bruto menos CPV",
+      "Lucro Líquido mais Despesas Operacionais"
+    ],
+    correctIndex: 0
+  },
+  {
+    topic: "Demonstrações Contábeis",
+    question: "Segundo a DR da Flor de Baunilha, o Lucro Líquido do exercício foi de:",
+    options: ["R$ 28.900,00", "R$ 16.250,00", "R$ 12.650,00", "R$ 54.000,00"],
+    correctIndex: 2
+  },
+  {
+    topic: "Demonstrações Contábeis",
+    question: "Salários, aluguel, energia e água da Flor de Baunilha são classificados na DR como:",
+    options: ["Custo de Produção", "Despesas Administrativas", "Receita Bruta", "Patrimônio Líquido"],
+    correctIndex: 1
+  },
+
+  // ===== CONCEITOS FUNDAMENTAIS =====
+  {
+    topic: "Conceitos Fundamentais",
+    question: "Para que serve a Contabilidade em uma empresa?",
+    options: [
+      "Apenas para cumprir exigências legais",
+      "Para organizar informações financeiras e ajudar na tomada de decisões",
+      "Somente para calcular impostos",
+      "Apenas para controlar funcionários"
+    ],
+    correctIndex: 1
+  },
+  {
+    topic: "Conceitos Fundamentais",
+    question: "Segundo o e-book, um dos primeiros povos a utilizar a contabilidade foi:",
+    options: ["Os Egípcios", "Os Romanos", "Os comerciantes da Mesopotâmia", "Os Gregos"],
+    correctIndex: 2
+  },
+  {
+    topic: "Conceitos Fundamentais",
+    question: "O que significa “liquidez” em contabilidade?",
+    options: [
+      "A facilidade de um bem se transformar em dinheiro",
+      "A quantidade de dívidas da empresa",
+      "O valor total do Patrimônio Líquido",
+      "O tempo de vida útil de uma máquina"
+    ],
+    correctIndex: 0
+  },
+  {
+    topic: "Conceitos Fundamentais",
+    question: "Quanto menor o prazo para pagamento de uma dívida, maior é o:",
+    options: ["Grau de liquidez", "Grau de exigibilidade", "Patrimônio Líquido", "Lucro Bruto"],
+    correctIndex: 1
+  },
+  {
+    topic: "Conceitos Fundamentais",
+    question: "A Flor de Baunilha é uma empresa do setor de:",
+    options: [
+      "Indústria de sorvetes/gelatos artesanais",
+      "Consultoria financeira",
+      "Comércio de eletrônicos",
+      "Construção civil"
+    ],
+    correctIndex: 0
+  },
+  {
+    topic: "Conceitos Fundamentais",
+    question: "Capital Social, no Patrimônio Líquido, representa:",
+    options: [
+      "Uma dívida da empresa com fornecedores",
+      "O valor investido pelos sócios na empresa",
+      "O lucro do último mês",
+      "O total de impostos pagos"
+    ],
+    correctIndex: 1
+  },
+  {
+    topic: "Conceitos Fundamentais",
+    question: "“Lucros Acumulados” representam:",
+    options: [
+      "Dinheiro guardado no caixa físico",
+      "Parte do lucro que permanece reinvestida na empresa",
+      "Um tipo de despesa administrativa",
+      "Uma obrigação de curto prazo"
+    ],
+    correctIndex: 1
+  }
+];
+
+
+// Desafio Contábil Flor de Baunilha - script.js
+
+const AVATARS = ["🍦","🍧","🍨","🧁","🍓","🍫","🌸","🥄","🍪"];
+const QUESTIONS_PER_ROUND = 6;
+const RANKING_KEY = "florBaunilha_ranking";
+const RECENT_KEY_LIMIT = 18; // evita repetir perguntas usadas nas últimas rodadas
+
+let state = {
+  players: [
+    { name: "", avatar: "", score: 0 },
+    { name: "", avatar: "", score: 0 }
+  ],
+  selectedAvatar: { 1: null, 2: null },
+  roundQuestions: [],
+  currentIndex: 0,
+  currentTurn: 0, // 0 = jogador 1, 1 = jogador 2
+  firstResponderThisRound: 0, // alterna a cada rodada/jogo
+  answered: false,
+  recentQuestionTexts: []
+};
+
+// ---------- NAVEGAÇÃO ENTRE TELAS ----------
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+// ---------- TELA INTRO ----------
+document.getElementById("btn-start").addEventListener("click", () => {
+  buildAvatarGrids();
+  showScreen("screen-setup");
+});
+document.getElementById("btn-ranking-open").addEventListener("click", () => {
+  renderRanking();
+  showScreen("screen-ranking");
+});
+document.getElementById("btn-back-intro").addEventListener("click", () => {
+  showScreen("screen-intro");
+});
+
+// ---------- TELA SETUP ----------
+function buildAvatarGrids() {
+  [1, 2].forEach(p => {
+    const grid = document.querySelector(`.avatar-grid[data-player="${p}"]`);
+    grid.innerHTML = "";
+    AVATARS.forEach(av => {
+      const btn = document.createElement("div");
+      btn.className = "avatar-option";
+      btn.textContent = av;
+      btn.addEventListener("click", () => selectAvatar(p, av));
+      grid.appendChild(btn);
+    });
+  });
+  state.selectedAvatar = { 1: null, 2: null };
+  document.getElementById("name-1").value = "";
+  document.getElementById("name-2").value = "";
+  document.getElementById("setup-error").textContent = "";
+  refreshAvatarGrids();
+}
+
+function selectAvatar(player, avatar) {
+  const other = player === 1 ? 2 : 1;
+  if (state.selectedAvatar[other] === avatar) return; // já escolhido pelo outro
+  state.selectedAvatar[player] = avatar;
+  refreshAvatarGrids();
+}
+
+function refreshAvatarGrids() {
+  [1, 2].forEach(p => {
+    const grid = document.querySelector(`.avatar-grid[data-player="${p}"]`);
+    const other = p === 1 ? 2 : 1;
+    [...grid.children].forEach(el => {
+      const av = el.textContent;
+      el.classList.toggle("selected", state.selectedAvatar[p] === av);
+      el.classList.toggle("taken", state.selectedAvatar[other] === av && state.selectedAvatar[p] !== av);
+    });
+  });
+}
+
+document.getElementById("btn-setup-confirm").addEventListener("click", () => {
+  const name1 = document.getElementById("name-1").value.trim();
+  const name2 = document.getElementById("name-2").value.trim();
+  const av1 = state.selectedAvatar[1];
+  const av2 = state.selectedAvatar[2];
+  const errorEl = document.getElementById("setup-error");
+
+  if (!name1 || !name2) {
+    errorEl.textContent = "Preencha o nome dos dois jogadores.";
+    return;
+  }
+  if (!av1 || !av2) {
+    errorEl.textContent = "Cada jogador precisa escolher um personagem.";
+    return;
+  }
+  errorEl.textContent = "";
+
+  state.players[0] = { name: name1, avatar: av1, score: 0 };
+  state.players[1] = { name: name2, avatar: av2, score: 0 };
+
+  startNewRound();
+  showScreen("screen-game");
+});
+
+// ---------- LÓGICA DO JOGO ----------
+function pickRoundQuestions() {
+  // filtra perguntas não usadas recentemente, se possível
+  let pool = QUESTION_BANK.filter(q => !state.recentQuestionTexts.includes(q.question));
+  if (pool.length < QUESTIONS_PER_ROUND) {
+    pool = [...QUESTION_BANK]; // reinicia o pool se acabar
+  }
+  const shuffled = shuffleArray(pool);
+  const chosen = shuffled.slice(0, QUESTIONS_PER_ROUND);
+
+  // guarda no histórico recente
+  chosen.forEach(q => state.recentQuestionTexts.push(q.question));
+  while (state.recentQuestionTexts.length > RECENT_KEY_LIMIT) {
+    state.recentQuestionTexts.shift();
+  }
+
+  return chosen;
+}
+
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function startNewRound() {
+  state.players[0].score = 0;
+  state.players[1].score = 0;
+  state.roundQuestions = pickRoundQuestions();
+  state.currentIndex = 0;
+  // alterna quem começa respondendo a cada nova partida
+  state.firstResponderThisRound = state.firstResponderThisRound === 0 ? 1 : 0;
+  state.currentTurn = state.firstResponderThisRound;
+  state.answered = false;
+
+  document.getElementById("q-total").textContent = QUESTIONS_PER_ROUND;
+  updateScorePills();
+  renderQuestion();
+}
+
+function updateScorePills() {
+  document.getElementById("score-avatar-1").textContent = state.players[0].avatar;
+  document.getElementById("score-name-1").textContent = state.players[0].name;
+  document.getElementById("score-points-1").textContent = state.players[0].score;
+
+  document.getElementById("score-avatar-2").textContent = state.players[1].avatar;
+  document.getElementById("score-name-2").textContent = state.players[1].name;
+  document.getElementById("score-points-2").textContent = state.players[1].score;
+
+  document.getElementById("score-pill-1").classList.toggle("active-turn", state.currentTurn === 0);
+  document.getElementById("score-pill-2").classList.toggle("active-turn", state.currentTurn === 1);
+
+  const turnPlayer = state.players[state.currentTurn];
+  document.getElementById("turn-indicator").textContent = `Vez de: ${turnPlayer.avatar} ${turnPlayer.name}`;
+}
+
+function renderQuestion() {
+  const q = state.roundQuestions[state.currentIndex];
+  state.answered = false;
+
+  document.getElementById("q-current").textContent = state.currentIndex + 1;
+  document.getElementById("topic-tag").textContent = q.topic;
+  document.getElementById("question-text").textContent = q.question;
+
+  const progressPct = ((state.currentIndex) / QUESTIONS_PER_ROUND) * 100;
+  document.getElementById("progress-fill").style.width = progressPct + "%";
+
+  // embaralha as opções (alterna a posição da resposta correta)
+  const indices = q.options.map((_, i) => i);
+  const shuffledIdx = shuffleArray(indices);
+  const correctShuffledPos = shuffledIdx.indexOf(q.correctIndex);
+
+  const grid = document.getElementById("options-grid");
+  grid.innerHTML = "";
+  shuffledIdx.forEach((origIdx, pos) => {
+    const btn = document.createElement("button");
+    btn.className = "option-btn";
+    btn.textContent = q.options[origIdx];
+    btn.addEventListener("click", () => handleAnswer(pos, correctShuffledPos, btn));
+    grid.appendChild(btn);
+  });
+
+  document.getElementById("feedback-box").textContent = "";
+  document.getElementById("feedback-box").className = "feedback-box";
+  document.getElementById("btn-next").classList.add("hidden");
+  updateScorePills();
+}
+
+function handleAnswer(chosenPos, correctPos, btnEl) {
+  if (state.answered) return;
+  state.answered = true;
+
+  const allButtons = document.querySelectorAll(".option-btn");
+  allButtons.forEach((b, idx) => {
+    b.disabled = true;
+    if (idx === correctPos) b.classList.add("correct");
+  });
+
+  const feedback = document.getElementById("feedback-box");
+  const playerObj = state.players[state.currentTurn];
+
+  if (chosenPos === correctPos) {
+    playerObj.score += 10;
+    feedback.textContent = `✅ Correto! ${playerObj.name} ganhou 10 pontos.`;
+    feedback.classList.add("ok");
+  } else {
+    btnEl.classList.add("wrong");
+    feedback.textContent = `❌ Resposta incorreta. ${playerObj.name} não pontuou.`;
+    feedback.classList.add("no");
+  }
+
+  updateScorePills();
+  document.getElementById("btn-next").classList.remove("hidden");
+}
+
+document.getElementById("btn-next").addEventListener("click", () => {
+  state.currentIndex++;
+  // alterna o jogador que responde a cada pergunta
+  state.currentTurn = state.currentTurn === 0 ? 1 : 0;
+
+  if (state.currentIndex >= QUESTIONS_PER_ROUND) {
+    showFinalResult();
+  } else {
+    renderQuestion();
+  }
+});
+
+// ---------- RESULTADO FINAL ----------
+function showFinalResult() {
+  const [p1, p2] = state.players;
+  const winnerBanner = document.getElementById("winner-banner");
+  const finalScores = document.getElementById("final-scores");
+
+  let winnerText;
+  if (p1.score === p2.score) {
+    winnerText = `🤝 Empate! Os dois jogadores fizeram ${p1.score} pontos.`;
+  } else {
+    const winner = p1.score > p2.score ? p1 : p2;
+    winnerText = `🏆 ${winner.avatar} ${winner.name} venceu o Desafio Contábil!`;
+  }
+  winnerBanner.textContent = winnerText;
+
+  finalScores.innerHTML = "";
+  [p1, p2].forEach(p => {
+    const isWinner = p.score > (p === p1 ? p2.score : p1.score);
+    const div = document.createElement("div");
+    div.className = "final-score-card" + (isWinner ? " winner" : "");
+    div.innerHTML = `
+      <div class="fav">${p.avatar}</div>
+      <div class="fname">${p.name}</div>
+      <div class="fpts">${p.score} pts</div>
+    `;
+    finalScores.appendChild(div);
+  });
+
+  showScreen("screen-result");
+}
+
+document.getElementById("btn-play-again").addEventListener("click", () => {
+  startNewRound();
+  showScreen("screen-game");
+});
+
+document.getElementById("btn-go-ranking").addEventListener("click", () => {
+  renderRanking();
+  showScreen("screen-ranking");
+});
+
+// ---------- RANKING ----------
+function getRanking() {
+  try {
+    const raw = localStorage.getItem(RANKING_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveRankingEntry(entry) {
+  const ranking = getRanking();
+  ranking.push(entry);
+  ranking.sort((a, b) => b.score - a.score);
+  localStorage.setItem(RANKING_KEY, JSON.stringify(ranking.slice(0, 50)));
+}
+
+document.getElementById("btn-save-ranking").addEventListener("click", () => {
+  const [p1, p2] = state.players;
+  const winner = p1.score >= p2.score ? p1 : p2;
+  const entry = {
+    name: winner.name,
+    avatar: winner.avatar,
+    score: winner.score,
+    date: new Date().toLocaleDateString("pt-BR")
+  };
+  saveRankingEntry(entry);
+  const btn = document.getElementById("btn-save-ranking");
+  btn.textContent = "✅ Pontuação Salva!";
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.textContent = "💾 Salvar no Ranking da Turma";
+    btn.disabled = false;
+  }, 2200);
+});
+
+function renderRanking() {
+  const ranking = getRanking();
+  const list = document.getElementById("ranking-list");
+  const empty = document.getElementById("ranking-empty");
+  list.innerHTML = "";
+
+  if (ranking.length === 0) {
+    empty.classList.remove("hidden");
+    return;
+  }
+  empty.classList.add("hidden");
+
+  ranking.forEach((entry, idx) => {
+    const item = document.createElement("div");
+    item.className = "ranking-item";
+    item.innerHTML = `
+      <div class="ranking-pos">${idx + 1}º</div>
+      <div class="ranking-avatar">${entry.avatar}</div>
+      <div class="ranking-name">${entry.name}</div>
+      <div class="ranking-date">${entry.date || ""}</div>
+      <div class="ranking-pts">${entry.score} pts</div>
+    `;
+    list.appendChild(item);
+  });
+}
+
+document.getElementById("btn-clear-ranking").addEventListener("click", () => {
+  if (confirm("Tem certeza que deseja limpar todo o ranking da turma?")) {
+    localStorage.removeItem(RANKING_KEY);
+    renderRanking();
+  }
+});
+
+document.getElementById("btn-ranking-back").addEventListener("click", () => {
+  showScreen("screen-intro");
+});
+
+</script>
+</body>
+</html>
